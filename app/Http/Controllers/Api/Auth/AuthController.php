@@ -30,6 +30,31 @@ class AuthController extends Controller
         return response()->json(['token' => $token]);
     }
 
+    public function register(AuthRequest $request)
+    {
+        if($request->password !== $request->password_confirmation) {
+            return response()->json(['success' => false, 'message' => "Senhas estão diferentes"], 409);
+        }
+
+        $findUserByEmail = User::where('email', $request->email)->first();
+
+        if($findUserByEmail) {
+            return response()->json(['success' => false, 'message' => "Email já cadastrado em outro usuário"], 409);
+        }
+
+        $user = new User([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        $user->save();
+
+        $token = $user->createToken($request->device_name)->plainTextToken;
+
+        return response()->json(['user' => $user, 'token' => $token]);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();

@@ -21,11 +21,11 @@ class AuthRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $commonRules = [
             'email' => [
                 'required',
                 'email',
-                'max:255'
+                'max:255',
             ],
             'password' => [
                 'required',
@@ -34,7 +34,23 @@ class AuthRequest extends FormRequest
             'device_name' => [
                 'required',
                 'max:255',
-            ]
+            ],
         ];
+
+        // Se a solicitação for para o método register, adicione as regras específicas
+        if ($this->isMethod('post') && $this->route()->getName() === 'register') {
+            return array_merge($commonRules, [
+                'name' => [
+                    'required',
+                    'max:255',
+                ],
+                'password_confirmation' => [
+                    'required',
+                    'same:password',
+                ],
+            ]);
+        }
+
+        return $commonRules;
     }
 }
