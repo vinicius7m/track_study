@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [AuthController::class, 'auth']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:sanctum']);
+Route::get('/me', [AuthController::class, 'me'])->middleware(['auth:sanctum']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/dashboard', [AuthController::class, 'dashboard']);
+});
+
+Route::get('/', function (Request $request) {
+    return response()->json(['success' => true, 'message' => 'Hello World!']);
 });
