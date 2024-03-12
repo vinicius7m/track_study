@@ -5,20 +5,20 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\AuthRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function auth(AuthRequest $request)
+    public function auth(AuthRequest $request) : JsonResponse
     {
         $user = User::where('email', $request->email)->first();
 
         if(!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect']
-            ]);
+            return response()->json(
+                ['success' => false, 'message' => "As credenciais enviadas estão incorretas"]);
         }
 
         // Logout other devices
@@ -30,7 +30,7 @@ class AuthController extends Controller
         return response()->json(['token' => $token]);
     }
 
-    public function register(AuthRequest $request)
+    public function register(AuthRequest $request) : string
     {
         if($request->password !== $request->password_confirmation) {
             return response()->json(['success' => false, 'message' => "Senhas estão diferentes"], 409);
@@ -55,7 +55,7 @@ class AuthController extends Controller
         return response()->json(['user' => $user, 'token' => $token]);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request) : string
     {
         $request->user()->tokens()->delete();
 
@@ -65,7 +65,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function me(Request $request)
+    public function me(Request $request) : string
     {
         $user = $request->user();
 
@@ -74,7 +74,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function dashboard()
+    public function dashboard() : string
     {
         return response()->json([
             'success' => true,
