@@ -13,6 +13,8 @@ class LoginAuthTest extends TestCase
      * A basic feature test example.
      */
 
+    use RefreshDatabase;
+
     public function test_login_with_http_verb_get(): void
     {
         $user = User::factory()->connection('sqlite')->create([ 'password' => bcrypt('12345678')]);
