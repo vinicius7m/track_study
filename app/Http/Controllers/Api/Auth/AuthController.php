@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\AuthRequest;
 use App\Models\User;
+use App\Services\Api\Auth\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,22 +13,16 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function auth(AuthRequest $request) : JsonResponse
+    private $authService;
+
+    public function __construct(AuthService $authService)
     {
-        $user = User::where('email', $request->email)->first();
+        $this->authService = $authService;
+    }
 
-        if(!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(
-                ['success' => false, 'message' => "As credenciais enviadas estão incorretas"]);
-        }
-
-        // Logout other devices
-        // if($request->has('logout_others_devices'))
-        $user->tokens()->delete();
-
-        $token = $user->createToken($request->device_name)->plainTextToken;
-
-        return response()->json(['token' => $token]);
+    public function login(AuthRequest $request) : JsonResponse
+    {
+        return $this->authService->login($request->validated());
     }
 
     public function register(AuthRequest $request) : string
