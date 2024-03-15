@@ -15,7 +15,12 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function findByEmail(array $data) : ?object
     {
-        $user = $this->user->where('email', $data['email'])->first();
+        $user = $this->user::where('email', $data['email'])->first();
         return $user ? $user : null;
+    }
+
+    public function create(array $data) : ?object
+    {
+        return $this->user::create($data);
     }
 }
