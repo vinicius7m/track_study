@@ -33,29 +33,31 @@ class CreateRepositoryCommand extends Command
 
         $repositoryBaseDirectory = app_path('Repositories');
 
-        $repositoryDirectory = $repositoryBaseDirectory . '/' . str_replace('\\', '/', $repositoryNamespace);
+        $repositoryDirectory = $repositoryBaseDirectory.'/'.str_replace('\\', '/', $repositoryNamespace);
 
-        if (!is_dir($repositoryDirectory)) {
-            if (!mkdir($repositoryDirectory, 0755, true)) {
-                $this->error('Failed to create directory: ' . $repositoryNamespace);
+        if (! is_dir($repositoryDirectory)) {
+            if (! mkdir($repositoryDirectory, 0755, true)) {
+                $this->error('Failed to create directory: '.$repositoryNamespace);
+
                 return;
             }
         }
 
-        $repositoryPath = $repositoryDirectory . '/' . $repositoryName . '.php';
+        $repositoryPath = $repositoryDirectory.'/'.$repositoryName.'.php';
 
         if (file_exists($repositoryPath)) {
             $this->error('Repository already exists!');
+
             return;
         }
 
         $repositoryContent = "<?php\n\nnamespace App\Repository\\$repositoryNamespace;\n\nclass $repositoryName\n{\n    // Your repository logic here...\n}\n";
         if (file_put_contents($repositoryPath, $repositoryContent) === false) {
             $this->error('Failed to create repository file!');
+
             return;
         }
 
-        $this->info('Repository created successfully: ' . $name);
+        $this->info('Repository created successfully: '.$name);
     }
-
 }

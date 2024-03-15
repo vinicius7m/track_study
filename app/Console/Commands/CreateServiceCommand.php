@@ -36,22 +36,24 @@ class CreateServiceCommand extends Command
         $serviceBaseDirectory = app_path('Services');
 
         // Diretório específico para o serviço
-        $serviceDirectory = $serviceBaseDirectory . '/' . str_replace('\\', '/', $serviceNamespace);
+        $serviceDirectory = $serviceBaseDirectory.'/'.str_replace('\\', '/', $serviceNamespace);
 
         // Verifica se o diretório específico existe e, se não, tenta criá-lo
-        if (!is_dir($serviceDirectory)) {
-            if (!mkdir($serviceDirectory, 0755, true)) {
-                $this->error('Failed to create directory: ' . $serviceNamespace);
+        if (! is_dir($serviceDirectory)) {
+            if (! mkdir($serviceDirectory, 0755, true)) {
+                $this->error('Failed to create directory: '.$serviceNamespace);
+
                 return;
             }
         }
 
         // Caminho completo para o serviço
-        $servicePath = $serviceDirectory . '/' . $serviceName . '.php';
+        $servicePath = $serviceDirectory.'/'.$serviceName.'.php';
 
         // Verifica se o serviço já existe
         if (file_exists($servicePath)) {
             $this->error('Service already exists!');
+
             return;
         }
 
@@ -59,10 +61,10 @@ class CreateServiceCommand extends Command
         $serviceContent = "<?php\n\nnamespace App\Services\\$serviceNamespace;\n\nclass $serviceName\n{\n    // Your service logic here...\n}\n";
         if (file_put_contents($servicePath, $serviceContent) === false) {
             $this->error('Failed to create service file!');
+
             return;
         }
 
-        $this->info('Service created successfully: ' . $name);
+        $this->info('Service created successfully: '.$name);
     }
-
 }

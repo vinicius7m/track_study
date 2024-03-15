@@ -2,9 +2,7 @@
 
 namespace App\Services\Api\Auth;
 
-use App\Models\User;
 use App\Repositories\Api\Auth\AuthRepository;
-use App\Services\Api\Auth\AuthServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,15 +15,15 @@ class AuthService implements AuthServiceInterface
         $this->authRepository = $authRepository;
     }
 
-    public function login(array $data) : JsonResponse
+    public function login(array $data): JsonResponse
     {
         $user = $this->authRepository->findByEmail($data);
 
-        if(!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             return response()->json([
-                    'success' => false,
-                    'message' => "As credenciais enviadas estão incorretas"
-                ]);
+                'success' => false,
+                'message' => 'As credenciais enviadas estão incorretas',
+            ]);
         }
 
         // Logout other devices
@@ -37,18 +35,17 @@ class AuthService implements AuthServiceInterface
         return response()->json(['token' => $token]);
     }
 
-    public function register(array $data) : JsonResponse
+    public function register(array $data): JsonResponse
     {
 
-
-        if($data['password'] !== $data['password_confirmation']) {
-            return response()->json(['success' => false, 'message' => "Senhas estão diferentes"], 409);
+        if ($data['password'] !== $data['password_confirmation']) {
+            return response()->json(['success' => false, 'message' => 'Senhas estão diferentes'], 409);
         }
 
         $user = $this->authRepository->findByEmail($data);
 
-        if($user) {
-            return response()->json(['success' => false, 'message' => "Email já cadastrado em outro usuário"], 409);
+        if ($user) {
+            return response()->json(['success' => false, 'message' => 'Email já cadastrado em outro usuário'], 409);
         }
 
         $dataUser = [
@@ -64,20 +61,20 @@ class AuthService implements AuthServiceInterface
         return response()->json(['user' => $user, 'token' => $token]);
     }
 
-    public function logout(object $user) : JsonResponse
+    public function logout(object $user): JsonResponse
     {
         $user->tokens()->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Sucesso'
+            'message' => 'Sucesso',
         ]);
     }
 
-    public function profile(object $user) : JsonResponse
+    public function profile(object $user): JsonResponse
     {
         return response()->json([
-            'user' => $user
+            'user' => $user,
         ]);
     }
 }
