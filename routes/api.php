@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard']);
